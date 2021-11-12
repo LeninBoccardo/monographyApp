@@ -8,6 +8,7 @@ import {
     Modal,
     Image,
     ActivityIndicator,
+    RefreshControl,
 } from 'react-native';
 import styles from './style';
 import firebase from '@react-native-firebase/firestore';
@@ -28,13 +29,23 @@ export default function Test({ navigation, route }) {
     const [modalMessage, setModalMessage] = useState('');
     const [imageRef, setImageRef] = useState(null);
     // const [idsChecked, setIdsChecked] = useState(null);
+    const [refreshing, setRefreshing] = React.useState(false);
+        
+    const wait = (timeout) => {
+        return new Promise(resolve => setTimeout(resolve, timeout));
+    };
 
     const messages = [
-        'Parabéns vc acertou, clique em próximo para realizar uma nova questão ou em voltar para escolher um novo assundo',
-        'Que pena, você errou, clique em próximo para realizar uma nova questão ou em voltar para escolher um novo assundo',
+        'Parabéns vc acertou, em voltar para escolher o mesmo ou um novo assundo',
+        'Que pena, você errou, em voltar para escolher o mesmo ou um novo assundo',
         'Por favor escolha uma resposta...',
         'Parabéns vc já realizou todos os testes sobre este assunto, agora é hora de passar para o próximo, vamos lá'
     ];
+    
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
 
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -263,7 +274,15 @@ export default function Test({ navigation, route }) {
                     </View>
                     </View>
                 </Modal>
-                <ScrollView style={styles.scrollContainer}>  
+                <ScrollView 
+                    style={styles.scrollContainer}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={() => onRefresh()}
+                        />
+                    }
+                >  
                     <View style={styles.imageContainer}>
                         { testData.imageRef !== 'undefined' ?
                             <Image

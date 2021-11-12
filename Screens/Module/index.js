@@ -24,7 +24,7 @@ export default function Module({ navigation, route }) {
         
         const getModuleData = async () => {
             try {
-                await firebase()
+                await firebase()  
                     .collection('Modules')
                     .doc(moduleId)
                     .collection('Content')
@@ -55,75 +55,7 @@ export default function Module({ navigation, route }) {
                             setModuleData(data);
                         })();
 
-
-
                         console.log("Module Data", moduleData);
-                        // console.log('list', list);
-                        // //list.forEach((element) => getImages(element));
-
-                        // list.forEach((element) => {
-                        //     try {
-                        //         storage()
-                        //             .ref(element)
-                        //             .getDownloadURL()
-                        //             .then(url => {
-                        //                 console.log('url', url);
-                        
-                        //                 downloadUrls.push({
-                        //                     ref: element,
-                        //                     downloadUrl: url
-                        //                 });
-                        //                 setImages(downloadUrls);
-                        
-                        //                 console.log('downloadUrls', downloadUrls);
-                        //                 console.log('images', images);
-                                        
-
-
-                        //             })
-                        //     } catch (error) {
-                        //         console.log(error);   
-                        //     }
-                        // })
-
-                        // makeData(data, downloadUrls);
-
-                        // setModuleData(data);
-                        
-                        // data = [
-                        //     {
-                        //         title: 'Introduction',
-                        //         data: [
-                        //             {
-                        //                 text: 'text',
-                        //                 downloadImageLink: downloadUrls[0],
-                        //             }
-                        //         ]
-                        //     }
-                        // ]
-
-                        
-                        
-                        // data.content.forEach(element => {
-                        //     itemDataList.push({
-                        //         title: element.title,
-                        //         data: [
-                        //             {
-                        //                 text: element.data[i].text,
-                        //                 downloadImageLink: downloadUrls[i],
-                        //             }
-                        //         ]
-                        //     })
-                        //     i = i + 1;
-                        // });
-
-                        // setItemData(data.content);
-
-                        // console.log('data', data);
-                        // console.log('list', list);                        
-                        // console.log('downloadUrls', downloadUrls);
-                        // console.log('moduleData', moduleData);
-                        // console.log('images', images);
                     })
                     .then(() => setLoading(false));
             } catch (error) {
@@ -211,45 +143,6 @@ export default function Module({ navigation, route }) {
                             )
                         }}
                     /> 
-                    // <SectionList
-                    //     sections={moduleData.content}
-                    //     keyExtractor={(item, index) => item + index}
-                    //     renderItem={({ item, index }) => {
-                    //         console.log('item: ', item);
-                    //         console.log('index: ', index);
-                    //         return(
-                    //         <View style={styles.contentContainer}>
-                    //             <View style={styles.imageContainer}>
-                    //             { images.length === [] ? 
-                    //                 <ActivityIndicator
-                    //                     color='#21aff0'
-                    //                     size='large'
-                    //                 />
-                    //                 :
-                    //                 images[index] === '' ?
-                    //                     <View></View>
-                    //                     :
-                    //                     <Image
-                    //                         style={styles.image}
-                    //                         uri={{
-                    //                             uri: images[index],
-                    //                         }}
-                    //                     />
-                    //             }
-                    //             </View>
-                    //             <Text style={styles.contentText}>
-                    //                 {'\t\t'+item.text}
-                    //             </Text>
-                    //         </View>
-                    //     )}}
-                    //     renderSectionHeader={({ section: { title } }) => {
-                    //         console.log('section title: ', title);
-                    //         return (
-                    //         <View style={styles.titleContainer}>
-                    //             <Text style={styles.titleText}>{title}</Text>
-                    //         </View>
-                    //     )}}
-                    // />
                     :
                     <ActivityIndicator
                         color='#21aff0'

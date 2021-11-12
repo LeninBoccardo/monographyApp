@@ -23,7 +23,6 @@ export default function App() {
           name="Init"
           component={Init}
           options={{
-
             headerShown: false,
           }}
         />
@@ -40,7 +39,6 @@ export default function App() {
           name="Menu"
           component={Menu}
           options={{
-            
             headerTitle: 'Menu',
             headerTintColor: '#21aff0',
             headerLeft: false,

@@ -27,7 +27,6 @@ export default function Test({ navigation, route }) {
     const [selectedValue, setSelectedValue] = useState(null);
     const [loading, setLoading] = useState(true);
     const [modalMessage, setModalMessage] = useState('');
-    
 
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -44,75 +43,77 @@ export default function Test({ navigation, route }) {
                 })
             }
 
-            for (let i = list.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-
-                [list[i], list[j]] = [list[j], list[i]]
-            }
-
             setRadioButtonsData(list);
         } catch (error) {
             console.log('getRadioButtonsData: ', error)
         }
     };
 
-
-
     useEffect(() => {
         const getTestData = async () => {
             try {
                 await firebase()
                     .collection('InitTests')
+                    .orderBy('order', 'asc')
                     .get()
                     .then((query) => {
                         const list = [];
                         
                         query.forEach((doc) => {
                             list.push({...doc.data(), id: doc.id});
-                        })
+                        });
+
+                        console.log('list: ', list);
                         
-                        console.log('list: ', list.length);
-    
-                        setTestData(list);
-    
-                        setCurrentTest(list[testDataIndex]);
-    
-                        console.log('currentTest: ', currentTest);
-    
-                        getRadioButtonsData(list[testDataIndex]);
-    
-                        console.log('list: ', list.length);
-    
-                        console.log('testData: ', testData)
-    
-                        console.log('testDataIndex: ', testDataIndex)
+                        (async () => {
+                            for (let index = 0; index < list.length; index++) {
+                                if (list[index].imageRef !== 'undefined') {
+                                    try {
+                                        await storage()
+                                            .ref(list[index].imageRef)
+                                            .getDownloadURL()
+                                            .then(url => {
+                                                list[index].image = url;
+                                                console.log('list: ', list);
+                                            });    
+                                    } catch (error) {
+                                        console.log('getImageData: ', error);
+                                    }
+                                    
+                                }
+                            }
+                            setTestData(list);
+
+                            setCurrentTest(list[testDataIndex]);
+                            
+                            getRadioButtonsData(list[testDataIndex]);
+                        })();
                     })
                     .then(() => setLoading(false))
             } catch (error) {
                 console.log('getTestData: ', error);
             }           
-        }
+        };
 
-        const getDidInitTest = async () => {
+        const checkInitTest = () => {
             try {
-                await firebase()
+                firebase()
                     .collection('UsersInfo')
                     .doc(userId)
-                    .get()
-                    .then(doc => {
-                        console.log('doc: ', doc.data());
+                    .onSnapshot((doc) => {
+                        console.log('doc: ', doc.id);
                         if (doc.data().initTests) {
-                            navigation.navigate('Menu', { userId: userId });    
+                            navigation.navigate('Menu', { userId: userId })
                         } else {
                             getTestData();
                         }
                     })
             } catch (error) {
-                console.log('getDidIniTest: ', error);
+                console.log('checkInitTest: ', error);
             }
-        }
+        };
 
-        getDidInitTest();
+        checkInitTest();
         console.log("useEffect Loaded");
     }, []);
 
@@ -207,65 +208,81 @@ export default function Test({ navigation, route }) {
                         </View>
                     </View>
                 </Modal>
-                <ScrollView style={styles.scrollContainer}>  
-                    <Text style={styles.questionText}>
-                        {'\t\t'+currentTest.question}
-                    </Text>
-                    { testData ?
-                        <RadioButton
-                            textStyle={styles.radioText}
-                            icon={<Icon name="check-circle" size={25} color="#00bfff" />}
-                            activeColor={'#00BFFF'}
-                            deactiveColor={'#999999'}
-                            data={radioButtonsData}
-                            selectedBtn={(e) => {
-                                console.log('testDataIndex: ', testDataIndex);
-                                setSelectedValue(e.value);
-                            }}
-                        />
-                        :
-                        <View></View>
-                    }
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            style={styles.confirmButton}
-                            onPress={() => {
-                                console.log('testDataIndex: ', testDataIndex);
-                                console.log('testData: ', testData);
-                                
-                                if (selectedValue) {
-                                    if (testDataIndex === testData.length - 1) {
-                                        addUserData();
+                { currentTest ?
+                    <ScrollView style={styles.scrollContainer}>  
+                        <Text style={styles.questionText}>
+                            {'\t\t'+currentTest.question}
+                        </Text>
+                        <View style={styles.imageContainer}>
+                            { currentTest.imageRef !== 'undefined' ?
+                                <Image
+                                    style={styles.image}
+                                    source={{uri: currentTest.image}}
+                                ></Image>    
+                                :
+                                <View></View>
+                            }
+                        </View>
+                        { radioButtonsData ?
+                            <RadioButton
+                                textStyle={styles.radioText}
+                                icon={<Icon name="check-circle" size={25} color="#00bfff" />}
+                                activeColor={'#00BFFF'}
+                                deactiveColor={'#999999'}
+                                data={radioButtonsData}
+                                selectedBtn={(e) => {
+                                    console.log('testDataIndex: ', testDataIndex);
+                                    setSelectedValue(e.value);
+                                }}
+                            />
+                            :
+                            <View></View>
+                        }
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                style={styles.confirmButton}
+                                onPress={() => {
+                                    console.log('testDataIndex: ', testDataIndex);
+                                    console.log('testData: ', testData);
+                                    
+                                    if (selectedValue) {
+                                        if (testDataIndex === testData.length - 1) {
+                                            addUserData();
 
-                                        setModalMessage('Obrigado por responder todas as questões, vamos para o menu!');
+                                            setModalMessage('Obrigado por responder todas as questões, vamos para o menu!');
+                                            
+                                            setModalVisible(!modalVisible);
+                                        } else {
+                                            console.log('index: ', testDataIndex);
+
+                                            setSelectedValue(null);
+
+                                            addUserData();
+                                            
+                                            shiftTestData();
+                                        }
+                                        
+                                        // temp.shift();
+
+                                        // setTestData(temp);
+
+                                        // setCurrentTest(testData[testDataIndex]);
+                                        
+                                        // getRadioButtonsData(testData[testDataIndex]);
+                                    } else {
+                                        setModalMessage('Por favor selecione uma alternativa...');
                                         
                                         setModalVisible(!modalVisible);
-                                    } else {
-                                        console.log('index: ', testDataIndex);
-
-                                        addUserData();
-                                        
-                                        shiftTestData();
                                     }
-                                    
-                                    // temp.shift();
-
-                                    // setTestData(temp);
-
-                                    // setCurrentTest(testData[testDataIndex]);
-                                    
-                                    // getRadioButtonsData(testData[testDataIndex]);
-                                } else {
-                                    setModalMessage('Por favor selecione uma alternativa...');
-                                    
-                                    setModalVisible(!modalVisible);
-                                }
-                            }}
-                        >
-                            <Text style={styles.buttonText}>Continuar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
+                                }}
+                            >
+                                <Text style={styles.buttonText}>Continuar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                    :
+                    <ActivityIndicator size="large" color="#00BFFF" />
+                }
             </SafeAreaView>
         );
     }

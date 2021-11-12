@@ -17,50 +17,68 @@ import DatePicker from 'react-native-date-picker';
 export default function Init({ navigation }) {
 
     const [openAgeModal, setOpenDateModal] = useState(false)
+    const [userId, setUserId] = useState(null)
     const [dateMessage, setDateMessage] = useState('Selecione a data');
     const [gender, setGender] = useState(''); 
     const [degree, setDegree] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [date, setDate] = useState(new Date());
     const [checkDate, setCheckDate] = useState(date);
-    const [intro, setIntro] = useState(true);
+    const [intro, setIntro] = useState(false);
     const [messagesIndex, setMessagesIndex] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        auth().onAuthStateChanged((user) => {
-            if (user) {
-                console.log(user.uid)
-                navigation.navigate('InitTest', { userId: user.uid })
-            } 
-        });
-    },[])
+
+        const checkUser = () => {
+            try {
+                auth().onAuthStateChanged((user) => {
+                    if (user) {
+                        navigation.navigate('InitTest', { userId: user.uid })
+                    } else {
+                        setLoading(false)
+                        setIntro(true)
+                    }
+                });
+            } catch (error) {
+                console.log('CheckUser:', error);
+            }
+        }
+
+        checkUser();
+    },[]);
 
     const addUser = async () => {
         await auth()
             .signInAnonymously()
             .then((userCredential) => {
                 
-                const user = userCredential.user.uid;
-                firestore()
-                    .collection('UsersInfo')
-                    .doc(userCredential.user.uid)
-                    .set({
-                        birthDate: date,
-                        degree: degree,
-                        gender: gender,
-                        initTests: false,
-                    })
-                    .then(() => navigation.navigate('InitTest', { userId: user }))
+                setUserId(userCredential.user.uid)
 
-            })   
+                console.log(userId)
+                
+                try {
+                    firestore()
+                        .collection('UsersInfo')
+                        .doc(userCredential.user.uid)
+                        .set({
+                            birthDate: date,
+                            degree: degree,
+                            gender: gender,
+                            initTests: false,
+                        })  
+                } catch (error) {
+                    console.log('firestoreUser: ', error);
+                }
+            })
+            .then(() => navigation.navigate('InitTest', { userId: userId }))
     };
 
     const messages = [
         'Seja bem-vindo ao App, é um prazer tê-lo por aqui!',
         'Será uma honra lhe ajudar a conscientizar-se sobre a Engenharia Social!',
         'Antes de prosseguir precisamos de algumas informações essênciais.',
-        'E não se preocupe, estas informação são anônimas e serão utilizadas apenas para fins ciêntificos.',
+        'E não se preocupe, estas informações são coletadas de forma anônima e serão utilizadas apenas para fins ciêntificos.',
     ]
 
     if (loading) {
@@ -84,7 +102,6 @@ export default function Init({ navigation }) {
                     <TouchableOpacity
                         style={styles.infoButton}
                         onPress={() => {
-                            console.log('Apertado');
                             if (messagesIndex < messages.length - 1) {
                                 setMessagesIndex(messagesIndex + 1);
                             } else {                            
