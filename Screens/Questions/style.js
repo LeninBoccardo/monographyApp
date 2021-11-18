@@ -6,6 +6,7 @@ const height = Dimensions.get('window').height;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff',
     },
     questionsContainer: {
         paddingVertical: 10,

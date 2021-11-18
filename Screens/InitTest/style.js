@@ -40,12 +40,13 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center"
     },
-        modalText: {
+    modalText: {
+        color: "black",
         marginBottom: 15,
         textAlign: "center"
     },
     scrollContainer: {
-        backgroundColor: '#eee',
+        backgroundColor: '#ffffff',
         paddingHorizontal: 20,
     },
     imageContainer: {

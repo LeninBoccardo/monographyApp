@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     scrollContainer: {
-        backgroundColor: '#eee',
+        backgroundColor: '#ffffff',
         paddingHorizontal: 20,
     },
     imageContainer: {

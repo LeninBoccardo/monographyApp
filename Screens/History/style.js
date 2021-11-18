@@ -7,6 +7,7 @@ const height = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: '#fff',
         flex: 1,
     },
     infoContainer: {
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
         width: width/3,
     },
     headerText: {
-        color: '#111',
+        color: '#000',
         fontSize: 20,
     },
     listContainer: {
@@ -46,6 +47,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     listText: {
+        color: '#000',
         fontSize: 15,
     },
 });

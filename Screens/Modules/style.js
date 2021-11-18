@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 20,
         paddingHorizontal: 10,
-        backgroundColor: '#eeeeee',
+        backgroundColor: '#ffffff',
         alignItems: 'center'
     },
     module: {

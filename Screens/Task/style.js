@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     DescriptionTask: {
         width: "75%",
         alignContent: "flex-start",
-        backgroundColor: "#f5f5f5cf",
+        backgroundColor: "#ffffff",
         padding: 12,
         paddingHorizontal: 20,
         borderRadius: 50,

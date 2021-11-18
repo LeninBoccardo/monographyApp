@@ -12,7 +12,6 @@ import {
 import styles from './style';
 
 export default function Menu({ navigation, route }) {
-
     const buttonsDesc = [
         "Este botão leva aos módulos disponíveis",
         "Este botão leva a seção de testes",
@@ -35,7 +34,7 @@ export default function Menu({ navigation, route }) {
             ]);
             return true;
         };
-      
+        
         const backHandler = BackHandler.addEventListener(
             "hardwareBackPress",
             backAction
@@ -44,33 +43,6 @@ export default function Menu({ navigation, route }) {
         setLoading(false);
         return () => backHandler.remove();
     }, []);
-
-    // const listData = [
-    //     {
-    //         id: 1,
-    //         title: "Módulos",
-    //         description: "Aqui você pode ver os módulos disponíveis",
-    //         route: "Modules",
-    //     },
-    //     {
-    //         id: 2,
-    //         title: "Testes",
-    //         description: "Aqui você pode fazer os testes",
-    //         route: "Tests",
-    //     },
-    //     {
-    //         id: 3,
-    //         title: "Histórico",
-    //         description: "Aqui você pode ver o histórico dos testes",
-    //         route: "History",
-    //     },
-    //     {
-    //         id: 4,
-    //         title: "Dúvidas",
-    //         description: "Aqui você pode ver as dúvidas",
-    //         route: "Questions",
-    //     }
-    // ]
 
     if (loading) {
         return (

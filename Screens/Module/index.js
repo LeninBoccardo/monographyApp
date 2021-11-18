@@ -28,6 +28,7 @@ export default function Module({ navigation, route }) {
                     .collection('Modules')
                     .doc(moduleId)
                     .collection('Content')
+                    .orderBy('order', 'asc')
                     .get()
                     .then(query => {
                         const data = []
@@ -70,6 +71,43 @@ export default function Module({ navigation, route }) {
         return text.replace('   ', '\n\t\t\t\t');
     }
 
+    const renderTitle = (title) => {
+        return (
+            <View style={styles.titleContainer}>
+                <Text style={styles.titleText}>
+                    {title}
+                </Text>
+            </View>
+        );
+    }
+
+    const renderImage = (image) => {
+        return (
+            <View style={styles.imageContainer}>
+                { image ?
+                    <Image
+                        style={styles.image}
+                        source={{uri: image}}
+                    />
+                    :
+                    <ActivityIndicator size="large" color="#00bfff" />
+                }
+            </View>
+        );
+    }
+
+    const renderText = (text) => {
+        return (
+            <View style={styles.textContainer}>
+                <Text
+                    style={styles.text}
+                >
+                    {'\t\t\t\t'+ formatText(text)}
+                </Text>
+            </View> 
+        );
+    }
+
     if (!loading) {
         return(
             <SafeAreaView style={styles.container}>
@@ -81,60 +119,26 @@ export default function Module({ navigation, route }) {
                         renderItem={({ item }) => {
                             return (
                                 <View style={styles.itemContainer}>
-                                    <View style={styles.titleContainer}>
-                                        <Text style={styles.titleText}>
-                                            {item.title}
-                                        </Text>
-                                    </View>
+                                    { item.title === 'undefined' ?
+                                        <View/>
+                                        :
+                                        renderTitle(item.title)
+                                    }
                                     { item.image === 'undefined' ?
-                                        <View style={styles.textContainer}>
-                                            <Text
-                                                style={styles.titleText}
-                                            >
-                                                {item.text}
-                                            </Text>
+                                        <View>
+                                            {renderText(item.text)}
                                         </View>
                                         :
                                         <View>
-                                            { item.imageFirst ?    
-                                                <View style={styles.contentContainer}>
-                                                    <View style={styles.imageContainer}>
-                                                        { item.imageRef ?
-                                                            <Image
-                                                                style={styles.image}
-                                                                source={{uri: item.imageRef}}
-                                                            />
-                                                            :
-                                                            <ActivityIndicator size="large" color="#00bfff" />
-                                                        }
-                                                    </View>
-                                                    <View style={styles.textContainer}>
-                                                        <Text
-                                                            style={styles.text}
-                                                        >
-                                                            {'\t\t\t\t'+ formatText(item.text)}
-                                                        </Text>
-                                                    </View>
+                                            { item.imageFirst ?
+                                                <View>
+                                                    {renderImage(item.imageRef)}
+                                                    {renderText(item.text)}
                                                 </View>
                                                 :
                                                 <View>
-                                                    <View style={styles.textContainer}>
-                                                        <Text
-                                                            style={styles.text}
-                                                        >
-                                                            {'\t\t\t\t' + formatText(item.text)}  
-                                                        </Text>
-                                                    </View>
-                                                    <View style={styles.imageContainer}>
-                                                        { item.imageRef ?
-                                                            <Image
-                                                                style={styles.image}
-                                                                source={{uri: item.imageRef}}
-                                                            />
-                                                            :
-                                                            <ActivityIndicator size="large" color="#00bfff" />
-                                                        }
-                                                    </View>
+                                                    {renderText(item.text)}
+                                                    {renderImage(item.imageRef)}
                                                 </View>
                                             }
                                         </View>
