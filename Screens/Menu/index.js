@@ -8,6 +8,7 @@ import {
     ActivityIndicator,
     BackHandler, 
     Alert,
+    ScrollView,
 } from 'react-native';
 import styles from './style';
 

@@ -21,7 +21,6 @@ export default function Module({ navigation, route }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        
         const getModuleData = async () => {
             try {
                 await firebase()  
@@ -67,8 +66,14 @@ export default function Module({ navigation, route }) {
         getModuleData();
     },[]);
 
+
+    //make a function that replace all three spaces for a new paragraph
+    const replaceThreeSpaces = (text) => {
+        return text.replace(/\s{3}/g, '\n\n\t\t\t\t');
+    }
+    
     const formatText = (text) => {
-        return text.replace('   ', '\n\t\t\t\t');
+        return text.replace(/\s{3}/g, '\n\n\t\t\t\t');
     }
 
     const renderTitle = (title) => {

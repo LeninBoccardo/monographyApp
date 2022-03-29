@@ -14,23 +14,60 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 export default function History({ navigation, route }) {
     const [userId, setUserId] = useState(route.params.userId);
     const [data, setData] = useState(null);
+    const [gotRightList, setGotRightList] = useState([]);
+    const [initGrade, setInitGrade] = useState(0.0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        firebase()
-            .collection('UsersInfo')
-            .doc(userId)
-            .collection('Tests')
-            .orderBy('completionDate', 'asc')
-            .onSnapshot((query) => {
-                const list = [];
-                query.forEach((doc) => {
-                    list.push({...doc.data()});
-                })
-                setData(list);
-                setLoading(false)
-            })
+        const getUserGrade = async () => {
+            try {
+                await firebase()
+                    .collection('UsersInfo')
+                    .doc(userId)
+                    .get()
+                    .then(doc => {
+                        setInitGrade(doc.data().grade);
+                    })
+                    .then(() => getUserHistory());
+            } catch (error) {
+                console.log('getUserGrade ', error);
+            }
+        }
+
+        const getUserHistory = async () => {
+            try {
+                firebase()
+                    .collection('UsersInfo')
+                    .doc(userId)
+                    .collection('Tests')
+                    .orderBy('completionDate', 'asc')
+                    .onSnapshot((query) => {
+                        const list = [];
+                        const gotRightList = [];
+                        query.forEach((doc) => {
+                            list.push({...doc.data()});
+                            gotRightList.push(doc.data().gotRight);
+                        })
+
+                        setGotRightList(gotRightList);
+                        setData(list);
+                        setLoading(false)
+                    })
+            } catch (error) {
+                console.log('getUserHistory ', error);
+            }
+        }
+
+        getUserGrade();
     } , []);
+
+    const gradeCalculated = (arr) => {
+        if (arr.length === 0) {
+            return 0;
+        }
+        const avg = (arr.reduce((a, b) => a + b, 0)) / arr.length;
+        return (10*avg).toFixed(2);
+    };
 
     const convertTimestamp = (timestamp) => {
         const date = timestamp.toDate();
@@ -60,14 +97,20 @@ export default function History({ navigation, route }) {
 
     return(
         <SafeAreaView style={styles.container}>
-            <View style={styles.infoContainer}>
+            <View style={styles.infoContainer}> 
                 <Text style={styles.infoText}>
-                    Quantidade de testes realizados: 
+                    Nota inicial: <Text style={{color:'#0000ff'}}>{initGrade.toFixed(1)}</Text>
+                </Text>
+                <Text style={styles.infoText}>
+                    Testes realizados: 
                     <Text style={{color:'#000'}}> {data?.length}</Text>
                 </Text>
                 <Text style={styles.infoText}>
-                    Quantidade de testes corretos: 
+                    Testes corretos: 
                     <Text style={{color:'green'}}> {data?.filter(item => item.gotRight).length}</Text>
+                </Text>
+                <Text style={styles.infoText}>
+                    Nota atual: <Text style={{color:'#000'}}>{gradeCalculated(gotRightList)}</Text>
                 </Text>
             </View>
             <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
@@ -86,7 +129,7 @@ export default function History({ navigation, route }) {
                 data={data}
                 renderItem={( {item} ) => {
                     return (
-                        <View style={styles.listContainer}>
+                        <View style={styles.listContainer}> 
                             
                             <View style={styles.listItem}>
                                 <Text style={styles.listText}>

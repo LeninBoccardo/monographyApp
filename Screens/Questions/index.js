@@ -11,25 +11,25 @@ export default function Questions({ navigation, route }) {
                 </Text>
                 <Text style={styles.answerText}>
                     O aplicativo serve para que você possa se 
-                    conscientizar sobre a engenharia social.
-                </Text>
+                    conscientizar sobre a Engenharia Social
+                </Text> 
                 <Text style={styles.questionText}>
                     Como funciona o aplicativo?
                 </Text>
                 <Text style={styles.answerText}>
                     O aplicativo é composto por módulos que contém
-                    o conteúdo de estudo sobre engenharia social,
-                    os testes que server para avaliar seu 
-                    conhecimento adquirido pelos módulos e o 
-                    histórico que exibe o seu desempenho dos 
-                    estudos.   
+                    o conteúdo de estudo sobre Engenharia Social,
+                    os testes que servem para avaliar seu 
+                    conhecimento adquirido ao longo da leitura dos módulos e o 
+                    histórico que exibe o seu desempenho nos testes.   
                 </Text>
                 <Text style={styles.questionText}>
-                    O que é a engenharia social?
+                    O que é a Engenharia Social?
                 </Text>
                 <Text style={styles.answerText}>
-                    Engenharia social é a arte de induzir uma 
-                    pessoa a realizar ações que podem ou não ser 
+                    Engenharia social é a ciência que estuda formas de
+                    "hackear" o cérebro humano a fim de induzir um 
+                    indivíduo a realizar ações que podem ou não ser 
                     de seu interesse. Saiba mais na seção
                     de <Text 
                         onPress={() => navigation.navigate('Modules', {userId: route.params.userId})}
@@ -42,8 +42,8 @@ export default function Questions({ navigation, route }) {
                 </Text>
                 <Text style={styles.answerText}>
                     Os módulos possuem informações teoricas sobre 
-                    a engenharia social, além de imagens ilustrativas,
-                    exemplos de casos e formas de se defender de 
+                    a Engenharia Social, além de imagens ilustrativas,
+                    exemplos de ataques e formas de se defender de 
                     eventuais ataques.
                 </Text>
                 <Text style={styles.questionText}>
@@ -83,9 +83,20 @@ export default function Questions({ navigation, route }) {
                 </Text>
                 <Text style={styles.answerText}>
                     Não é necessário criar uma conta pois o aplicativo gera
-                    automaticamente um usuário anônimo após a inserção dos
-                    dados essênciais (data de nascimento, escolaridade e gênero),
-                    desta forma a identidade do usuário se mantém oculta e protegida.
+                    automaticamente um usuário anônimo após o término da introdução 
+                    (mensagens apresentadas ao abrir o aplicativo pela primeira vez),
+                    desta forma a identidade do usuário se mantém oculta.
+                </Text>
+                <Text style={styles.questionText}>
+                    Como funciona o cálculo das notas?
+                </Text>
+                <Text style={styles.answerText}>
+                    Para a nota inicial o cálculo é baseado no peso da alternativa
+                    escolhida nos testes iniciais, isso porque tais testes não possuem
+                    resposta certa ou errada. Para a nota gerada pelo usuário ao realizar
+                    os testes, o cálculo é baseado no numero de acertos e total de questões
+                    realizadas. Dividi-se o total de acertos pelo total de questões e
+                    multiplica-se por 10, assim gerando a nota atual.
                 </Text>
             </ScrollView>
         </SafeAreaView>

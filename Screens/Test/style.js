@@ -36,11 +36,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#21aff0",
     },
     textStyle: {
-        color: "white",
+        color: "black",
         fontWeight: "bold",
         textAlign: "center"
-    },
-        modalText: {
+    },    
+    modalText: {
         marginBottom: 15,
         textAlign: "center"
     },

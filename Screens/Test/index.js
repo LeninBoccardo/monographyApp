@@ -36,10 +36,10 @@ export default function Test({ navigation, route }) {
     };
 
     const messages = [
-        'Parabéns vc acertou, em voltar para escolher o mesmo ou um novo assundo',
+        'Parabéns você acertou, em voltar para escolher o mesmo ou um novo assundo',
         'Que pena, você errou, em voltar para escolher o mesmo ou um novo assundo',
         'Por favor escolha uma resposta...',
-        'Parabéns vc já realizou todos os testes sobre este assunto, agora é hora de passar para o próximo, vamos lá'
+        'Parabéns você já realizou todos os testes sobre este assunto, agora é hora de passar para o próximo, vamos lá'
     ];
     
     const onRefresh = React.useCallback(() => {
@@ -75,11 +75,12 @@ export default function Test({ navigation, route }) {
     };
 
     useEffect(() => {
+        
         const getFilteredTestData = async () => {
             try {
                 await firebase()
                     .collection(collection)
-                    .where('subject', '==', subject)
+                    .where('subject', '==', route.params.subject)
                     .get()
                     .then((querySnapshot) => {
                         const list = [];
@@ -87,35 +88,10 @@ export default function Test({ navigation, route }) {
                         querySnapshot.forEach((doc) => {
                             list.push({...doc.data(), id: doc.id});
                         })
+                         
+                        console.log(list);
 
                         let randomNum = Math.floor(Math.random() * list.length);
-                        
-                        //console.log('list: ', list)
-                        
-                        // let ids = [];
-
-                        // while (true) {
-                        //     ids.push(list[randomNum].id);
-
-                        //     checkIfTestIsDone(list[randomNum].id);
-                            
-                        //     if (isDone) {
-                        //         compareIdLists(list, ids)
-                                
-                        //         if (idsChecked === 'equal') {
-                        //             setModalMessage(messages[4]);
-                        //             setModalVisible(true);
-                        //             break;
-                        //         }      
-                            
-                        //     } else {
-                        //         break;
-                        //     }
-
-                        //     randomNum = Math.floor(Math.random() * list.length);
-                        //     console.log('randomNum: ', randomNum)
-                        //     console.log('list[randomNum].id: ', list[randomNum].id)
-                        // }
 
                         setTestData(list[randomNum]);
 
@@ -135,8 +111,6 @@ export default function Test({ navigation, route }) {
                             }
                         }
 
-                        // setImageRef(ref);
-                        // console.log('ImageRef:', imageRef)
                         getRadioButtonsData(list[randomNum]);
                     })
                     .then(() => setLoading(false))

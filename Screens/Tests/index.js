@@ -7,7 +7,7 @@ import {
     ActivityIndicator 
 } from 'react-native';
 import styles from './style';
-import firebase from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/firestore'; 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Tests({ navigation, route }) {
@@ -18,11 +18,13 @@ export default function Tests({ navigation, route }) {
     const getSubjects = () => {
         firebase()
             .collection('Subjects')
+            .orderBy('order', 'asc')
             .get()
             .then((query) => {
                 const list = []
+                let grade = 0;
                 query.forEach((doc) => {
-                    list.push(doc.id)
+                    list.push({...doc.data(), id: doc.id});
                 })
                 setSubjects(list);
                 console.log('subjects: ', subjects)
@@ -57,33 +59,41 @@ export default function Tests({ navigation, route }) {
 
     return(
         <View style={styles.container}>
-            <FlatList
-                showsHorizontalScrollIndicator={false}
-                data={subjects}
-                renderItem={( item ) => {
-                    return (
-                        <TouchableOpacity 
-                            onPress={() => {
-                                console.log('pressed');
-                                console.log(item.item)
-                                
-                                navigation.navigate(
-                                    'Test', {
-                                        userId: userId, // route.params.userId
-                                        subject: item.item,
-                                    }
-                                )
-                            }}
-                        >
-                            <View style={styles.test}>
-                                    <Text style={styles.testText}>
-                                        Teste - <Text style={styles.testSubject}>{capitalizeFirstLetter(item.item)}</Text>
-                                    </Text>
-                            </View>
-                        </TouchableOpacity>
-                    )
-                }}
-            />
+            { subjects ? 
+                <FlatList
+                    showsHorizontalScrollIndicator={false}
+                    data={subjects}
+                    renderItem={( {item} ) => {
+                        return (
+                            <TouchableOpacity 
+                                onPress={() => {
+                                    console.log('pressed');
+                                    console.log(item)
+                                    
+                                    navigation.navigate(
+                                        'Test', {
+                                            userId: userId, // route.params.userId
+                                            subject: item.subject,
+                                        }
+                                    )
+                                }}
+                            >
+                                <View style={styles.test}>
+                                        <Text style={styles.testText}>
+                                            <Text style={styles.testSubject}>{item.id}</Text>
+                                        </Text>
+                                </View>
+                            </TouchableOpacity>
+                        )
+                    }}
+                />
+                :
+                <ActivityIndicator
+                    color='#21aff0'
+                    size='large'
+                />
+            }
+            
         </View>
     );
 }

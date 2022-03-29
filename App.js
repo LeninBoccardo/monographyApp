@@ -8,7 +8,6 @@ import Modules from './Screens/Modules/index';
 import Test from './Screens/Test/index';
 import Tests from './Screens/Tests/index';
 import History from './Screens/History/index';
-import About from './Screens/About/index';
 import Questions from './Screens/Questions/index';
 import InitTest from './Screens/InitTest/index';
 
@@ -81,14 +80,6 @@ export default function App() {
           component={History}
           options={{
             headerTitle: 'Histórico',
-            headerTintColor: "#21aff0",
-          }}
-        />
-        <Stack.Screen
-          name="About"
-          component={About}
-          options={{
-            headerTitle: 'Informações',
             headerTintColor: "#21aff0",
           }}
         />

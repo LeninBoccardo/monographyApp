@@ -62,9 +62,9 @@ export default function Modules({ navigation, route }) {
                             }}
                         >
                             <View style={styles.module}>
-                                    <Text style={styles.moduleText}>
-                                        Módulo {item.order} - {capitalizeFirstLetter(item.subject)}
-                                    </Text>
+                                <Text style={styles.moduleText}>
+                                    {capitalizeFirstLetter(item.subject)}
+                                </Text>
                             </View>
                         </TouchableOpacity>
                     )

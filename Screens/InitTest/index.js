@@ -27,6 +27,9 @@ export default function Test({ navigation, route }) {
     const [selectedValue, setSelectedValue] = useState(null);
     const [loading, setLoading] = useState(true);
     const [modalMessage, setModalMessage] = useState('');
+    const [grade, setGrade] = useState(0);
+    const [gradeSum, setGradeSum] = useState(0);
+
 
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -38,6 +41,7 @@ export default function Test({ navigation, route }) {
 
             for (let index = 0; index < data.choices.length; index++) {
                 list.push({
+                    index: index,
                     label: capitalizeFirstLetter(data.choices[index]),
                     value: data.choices[index],
                 })
@@ -102,10 +106,10 @@ export default function Test({ navigation, route }) {
                     .doc(userId)
                     .onSnapshot((doc) => {
                         console.log('doc: ', doc.id);
-                        if (doc.data().initTests) {
-                            navigation.navigate('Menu', { userId: userId })
-                        } else {
+                        if (typeof(doc.data().initTests) === 'undefined' || doc.data().initTests === false) {
                             getTestData();
+                        } else {
+                            navigation.navigate('Menu', { userId: userId })   
                         }
                     })
             } catch (error) {
@@ -114,7 +118,6 @@ export default function Test({ navigation, route }) {
         };
 
         checkInitTest();
-        console.log("useEffect Loaded");
     }, []);
 
     const userDidTests = async () => {
@@ -124,6 +127,7 @@ export default function Test({ navigation, route }) {
                 .doc(userId)
                 .update({
                     initTests: true,
+                    grade: gradeCalculated(gradeSum).finalGrade,
                 })
                 .then(() => navigation.navigate('Menu', { userId: userId }))
         } catch (error) {
@@ -153,6 +157,28 @@ export default function Test({ navigation, route }) {
         }
     };
 
+    const gradeCalculated = (grade) => {
+        let finalGrade = grade/2;
+        let message = '';
+        let finalGradeMessage = '';
+
+        if (finalGrade <= 3) {
+            message = 'Seu conhecimento em Engenharia Social é razoável mas não se preocupe, estamos aqui para mudar isso.';
+        } else if (finalGrade <= 6) {
+            message = 'Seu conhecimento em Engenharia Social é bom mas há ainda algumas brechas que o app pode ajudar a preencher.';
+        } else if (finalGrade <= 9) {
+            message = 'Seu conhecimento em Engenharia Social é bem avançado mas ainda pode melhorar.';
+        } else {
+            message = 'Seu conhecimento em Engenharia Social é pleno, mesmo assim não deixe de conferir o restante do app.';
+        }
+
+        //format a string to show two decimal places
+
+        finalGradeMessage = finalGrade.toFixed(1) + '! ' + message;
+
+        return {finalGrade, finalGradeMessage}
+    }
+
     const shiftTestData = () => {
         setTestDataIndex(testDataIndex + 1);
         setSelectedValue(null);
@@ -170,6 +196,7 @@ export default function Test({ navigation, route }) {
                     visible={modalVisible}
                     onRequestClose={() => {
                         setModalVisible(!modalVisible);
+                        userDidTests();
                     }}
                 >
                     <View style={styles.centeredView}>
@@ -232,7 +259,9 @@ export default function Test({ navigation, route }) {
                                 data={radioButtonsData}
                                 selectedBtn={(e) => {
                                     console.log('testDataIndex: ', testDataIndex);
+                                    console.log('gradeSum', gradeSum);
                                     setSelectedValue(e.value);
+                                    setGrade(e.index);
                                 }}
                             />
                             :
@@ -242,18 +271,24 @@ export default function Test({ navigation, route }) {
                             <TouchableOpacity
                                 style={styles.confirmButton}
                                 onPress={() => {
-                                    console.log('testDataIndex: ', testDataIndex);
-                                    console.log('testData: ', testData);
-                                    
                                     if (selectedValue) {
                                         if (testDataIndex === testData.length - 1) {
                                             addUserData();
 
-                                            setModalMessage('Obrigado por responder todas as questões, vamos para o menu!');
+                                            setGradeSum(gradeSum + grade);
+
+                                            setModalMessage(
+                                                'Obrigado por responder todas as questões, sua nota inicial foi ' 
+                                                + gradeCalculated(gradeSum+grade).finalGradeMessage
+                                                );
                                             
                                             setModalVisible(!modalVisible);
                                         } else {
-                                            console.log('index: ', testDataIndex);
+                                            console.log('grade: ', grade);
+
+                                            setGradeSum(gradeSum + grade);
+                                        
+                                            console.log('gradeSum: ', gradeSum);
 
                                             setSelectedValue(null);
 
@@ -261,14 +296,6 @@ export default function Test({ navigation, route }) {
                                             
                                             shiftTestData();
                                         }
-                                        
-                                        // temp.shift();
-
-                                        // setTestData(temp);
-
-                                        // setCurrentTest(testData[testDataIndex]);
-                                        
-                                        // getRadioButtonsData(testData[testDataIndex]);
                                     } else {
                                         setModalMessage('Por favor selecione uma alternativa...');
                                         
